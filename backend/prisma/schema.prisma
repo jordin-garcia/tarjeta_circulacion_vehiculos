@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model color {
+  id_color        Int               @id @default(autoincrement())
+  color           String            @unique @db.VarChar(50)
+  detalles        String?           @db.VarChar(100)
+  estado_vehiculo estado_vehiculo[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model estado_vehiculo {
+  id_estado           Int                   @id @default(autoincrement())
+  placa               String                @db.VarChar(10)
+  motor               String                @db.VarChar(20)
+  fecha_actualizacion DateTime              @db.Date
+  motivo_cambio       String                @db.VarChar(255)
+  id_uso_fk           Int
+  id_color_fk         Int
+  id_vehiculo_fk      Int
+  color               color                 @relation(fields: [id_color_fk], references: [id_color], map: "color_fk")
+  uso_vehiculo        uso_vehiculo          @relation(fields: [id_uso_fk], references: [id_uso], map: "uso_fk")
+  vehiculo            vehiculo              @relation(fields: [id_vehiculo_fk], references: [id_vehiculo], map: "vehiculo_fk")
+  tarjeta_circulacion tarjeta_circulacion[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model linea_vehiculo {
+  id_linea       Int            @id @default(autoincrement())
+  linea          String         @db.VarChar(50)
+  id_marca_fk    Int
+  marca_vehiculo marca_vehiculo @relation(fields: [id_marca_fk], references: [id_marca], map: "marca_fk")
+  vehiculo       vehiculo[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model marca_vehiculo {
+  id_marca       Int              @id @default(autoincrement())
+  marca          String           @unique @db.VarChar(50)
+  linea_vehiculo linea_vehiculo[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model propietario {
+  nit                 String                @id @db.VarChar(10)
+  nombre              String                @db.VarChar(100)
+  cui_p               String                @unique @db.VarChar(15)
+  tarjeta_circulacion tarjeta_circulacion[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tarjeta_circulacion {
+  numero                Int             @id
+  cui_tc                String          @unique @db.VarChar(20)
+  fecha_registro        DateTime        @db.Date
+  fecha_vencimiento     DateTime        @db.Date
+  fecha_emision         DateTime        @db.Date
+  hora_emision          DateTime        @db.Time(6)
+  estado                Boolean
+  nit_propietario_fk    String          @db.VarChar(10)
+  id_estado_vehiculo_fk Int
+  estado_vehiculo       estado_vehiculo @relation(fields: [id_estado_vehiculo_fk], references: [id_estado], map: "estado_vehiculo_fk")
+  propietario           propietario     @relation(fields: [nit_propietario_fk], references: [nit], map: "propietario_tc_fk")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tipo_vehiculo {
+  id_tipo  Int        @id @default(autoincrement())
+  tipo     String     @unique @db.VarChar(50)
+  vehiculo vehiculo[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model uso_vehiculo {
+  id_uso          Int               @id @default(autoincrement())
+  uso             String            @unique @db.VarChar(50)
+  estado_vehiculo estado_vehiculo[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model usuario {
+  id_usuario Int    @id @default(autoincrement())
+  password   String @db.VarChar(255)
+  username   String @unique(map: "usuario_nit_usuario_fk_key") @db.VarChar(10)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model vehiculo {
+  id_vehiculo     Int               @id @default(autoincrement())
+  vin             String            @unique @db.VarChar(20)
+  chasis          String            @unique @db.VarChar(20)
+  serie           String            @db.VarChar(20)
+  modelo          Int
+  cilindros       Int
+  asientos        Int
+  ejes            Int
+  cc              Int
+  ton             Int
+  id_linea_fk     Int
+  id_tipo_fk      Int
+  estado_vehiculo estado_vehiculo[]
+  linea_vehiculo  linea_vehiculo    @relation(fields: [id_linea_fk], references: [id_linea], map: "linea_fk")
+  tipo_vehiculo   tipo_vehiculo     @relation(fields: [id_tipo_fk], references: [id_tipo], map: "tipo_fk")
+}
