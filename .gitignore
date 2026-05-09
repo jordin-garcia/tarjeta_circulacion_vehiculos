@@ -3,8 +3,6 @@ dist/
 .env
 *.log
 .DS_Store
-
-# Archivos de contexto ignorados
 *.pdf
 *.txt
 *.png
