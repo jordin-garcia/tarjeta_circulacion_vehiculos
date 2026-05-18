@@ -1,4 +1,4 @@
-# 🚗 NexDrive - Sistema de Gestión de Tarjetas de Circulación (SAT)
+# 🚗 NexDrive - Sistema de Gestión de Tarjetas de Circulación
 
 NexDrive es un sistema destinado a la gestión, emisión, validación y control de Tarjetas de Circulación Electrónicas en tiempo real. La plataforma cuenta con una arquitectura desacoplada moderna (Backend en NestJS y Frontend en React con Vite), diseñada con un aspecto visual futurista, seguro y de alto rendimiento.
 
