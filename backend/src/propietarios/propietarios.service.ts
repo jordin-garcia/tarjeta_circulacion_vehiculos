@@ -18,12 +18,19 @@ export class PropietariosService {
   }
 
   findAll() {
-    return this.prisma.propietario.findMany();
+    return this.prisma.propietario.findMany({
+      include: {
+        tarjeta_circulacion: true,
+      },
+    });
   }
 
   findOne(nit: string) {
     return this.prisma.propietario.findUnique({
-      where: { nit: nit }
+      where: { nit: nit },
+      include: {
+        tarjeta_circulacion: true,
+      },
     });
   }
 

@@ -1,19 +1,37 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'; // <- Nuevo import
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { PrismaExceptionFilter, AllExceptionsFilter } from './filters/prisma-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
+  // --- CORS RESTRINGIDO ---
+  // Solo acepta peticiones desde estos orígenes (el frontend)
+  app.enableCors({
+    origin: [
+      'http://localhost:5173',   // Vite dev server
+      'http://localhost:4173',   // Vite preview
+    ],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    credentials: true,
+  });
 
+  // --- VALIDACIONES GLOBALES ---
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
     }),
+  );
+
+  // --- FILTROS DE EXCEPCIONES CENTRALIZADOS ---
+  // El orden importa: AllExceptionsFilter es el "catch-all" de último recurso
+  app.useGlobalFilters(
+    new AllExceptionsFilter(),
+    new PrismaExceptionFilter(),
   );
 
   // --- CONFIGURACIÓN DE SWAGGER ---
@@ -31,3 +49,4 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
+

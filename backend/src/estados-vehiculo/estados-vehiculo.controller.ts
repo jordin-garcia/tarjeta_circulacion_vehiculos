@@ -1,10 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '../auth/auth.guard';
 import { EstadosVehiculoService } from './estados-vehiculo.service';
 import { CreateEstadosVehiculoDto } from './dto/create-estados-vehiculo.dto';
 import { UpdateEstadosVehiculoDto } from './dto/update-estados-vehiculo.dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Estados de Vehículos (Historial de Placas y Colores)')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('estados-vehiculo')
 export class EstadosVehiculoController {
   constructor(private readonly estadosVehiculoService: EstadosVehiculoService) { }

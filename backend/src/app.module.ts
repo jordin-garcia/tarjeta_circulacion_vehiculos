@@ -11,7 +11,7 @@ import { EstadosVehiculoModule } from './estados-vehiculo/estados-vehiculo.modul
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, ConfigModule.forRoot(), CatalogsModule, PropietariosModule, VehiculosModule, TarjetasModule, EstadosVehiculoModule, AuthModule],
+  imports: [PrismaModule, ConfigModule.forRoot({ isGlobal: true }), CatalogsModule, PropietariosModule, VehiculosModule, TarjetasModule, EstadosVehiculoModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })

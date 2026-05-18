@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
@@ -7,14 +8,17 @@ import { PrismaModule } from '../prisma/prisma.module';
 @Module({
   imports: [
     PrismaModule,
-    // Configuramos el "Generador de Gafetes" para que se use en todo el sistema
-    JwtModule.register({
+    JwtModule.registerAsync({
       global: true,
-      secret: 'SECRETO_SAT_2026', // En producción, esto NUNCA va aquí, sino en .env
-      signOptions: { expiresIn: '8h' }, // El token será válido por 8 horas (una jornada laboral)
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '8h' },
+      }),
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }

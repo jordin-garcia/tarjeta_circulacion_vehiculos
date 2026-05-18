@@ -1,10 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '../auth/auth.guard';
 import { PropietariosService } from './propietarios.service';
 import { CreatePropietarioDto } from './dto/create-propietario.dto';
 import { UpdatePropietarioDto } from './dto/update-propietario.dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Propietarios')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('propietarios')
 export class PropietariosController {
   constructor(private readonly propietariosService: PropietariosService) { }

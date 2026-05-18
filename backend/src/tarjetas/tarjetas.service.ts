@@ -89,7 +89,11 @@ export class TarjetasService {
       datosAActualizar.hora_emision = this.parseTime(updateTarjetaDto.hora_emision);
     }
 
-    // Finalmente, le pedimos a Prisma que actualice la tabla en Supabase
+    if (updateTarjetaDto.estado === true) {
+      datosAActualizar.motivo_inactivacion = null;
+    }
+
+    // Finalmente, le pedimos a Prisma que actualice la tabla en Supabase (con el cliente regenerado)
     return this.prisma.tarjeta_circulacion.update({
       where: { numero: numero },
       data: datosAActualizar,

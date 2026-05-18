@@ -5,24 +5,25 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(private jwtService: JwtService, private configService: ConfigService) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     // Extraemos el Token del encabezado HTTP
     const token = this.extractTokenFromHeader(request);
-    
+
     if (!token) {
       throw new UnauthorizedException('¡Alto ahí! Necesitas tu Gafete Virtual (Token) para acceder aquí.');
     }
     try {
       // Verificamos que el Token fue firmado por nosotros y no ha expirado
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: 'SECRETO_SAT_2026', // El mismo secreto que usamos en auth.module.ts
+        secret: this.configService.get<string>('JWT_SECRET'),
       });
       // Si es válido, adjuntamos la información del usuario a la petición
       request['user'] = payload;

@@ -15,13 +15,17 @@ export class VehiculosService {
 
   findAll() {
     return this.prisma.vehiculo.findMany({
-      // "include" es el equivalente a un JOIN en SQL
-      // ¡Esto traerá la información completa de la marca, línea y tipo!
       include: {
         linea_vehiculo: {
           include: { marca_vehiculo: true }
         },
         tipo_vehiculo: true,
+        estado_vehiculo: {
+          include: { 
+            uso_vehiculo: true,
+            color: true
+          }
+        }
       }
     });
   }
@@ -34,6 +38,12 @@ export class VehiculosService {
           include: { marca_vehiculo: true }
         },
         tipo_vehiculo: true,
+        estado_vehiculo: {
+          include: { 
+            uso_vehiculo: true,
+            color: true
+          }
+        }
       }
     });
   }

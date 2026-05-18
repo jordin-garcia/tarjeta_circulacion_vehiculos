@@ -63,6 +63,7 @@ model tarjeta_circulacion {
   fecha_emision         DateTime        @db.Date
   hora_emision          DateTime        @db.Time(6)
   estado                Boolean
+  motivo_inactivacion   String?         @db.VarChar(255)
   nit_propietario_fk    String          @db.VarChar(10)
   id_estado_vehiculo_fk Int
   estado_vehiculo       estado_vehiculo @relation(fields: [id_estado_vehiculo_fk], references: [id_estado], map: "estado_vehiculo_fk")

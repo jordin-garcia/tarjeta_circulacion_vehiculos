@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { CreateEstadosVehiculoDto } from './dto/create-estados-vehiculo.dto';
 import { UpdateEstadosVehiculoDto } from './dto/update-estados-vehiculo.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,7 +13,33 @@ export class EstadosVehiculoService {
     return new Date(`${year}-${month}-${day}T00:00:00Z`);
   }
 
-  create(createEstadosVehiculoDto: CreateEstadosVehiculoDto) {
+  async create(createEstadosVehiculoDto: CreateEstadosVehiculoDto) {
+    // 1. Validar que la placa no exista en otro vehículo diferente
+    const placaExiste = await this.prisma.estado_vehiculo.findFirst({
+      where: {
+        placa: createEstadosVehiculoDto.placa,
+        id_vehiculo_fk: {
+          not: createEstadosVehiculoDto.id_vehiculo_fk,
+        },
+      },
+    });
+    if (placaExiste) {
+      throw new ConflictException('Ya existe otro vehículo registrado con el número de Placa ingresado');
+    }
+
+    // 2. Validar que el motor no exista en otro vehículo diferente
+    const motorExiste = await this.prisma.estado_vehiculo.findFirst({
+      where: {
+        motor: createEstadosVehiculoDto.motor,
+        id_vehiculo_fk: {
+          not: createEstadosVehiculoDto.id_vehiculo_fk,
+        },
+      },
+    });
+    if (motorExiste) {
+      throw new ConflictException('Ya existe otro vehículo registrado con el número de Motor ingresado');
+    }
+
     return this.prisma.estado_vehiculo.create({
       data: {
         placa: createEstadosVehiculoDto.placa,
